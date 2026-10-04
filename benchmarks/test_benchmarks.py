@@ -1,5 +1,7 @@
 """Keep fixture generation and correctness checks outside measured functions."""
 
+from collections import Counter
+
 import pytest
 
 from playground import normalize_labels, sample_orders, top_products, totals_by_customer
@@ -12,12 +14,22 @@ def orders(request):
 
 def test_customer_totals(benchmark, orders):
     result = benchmark(totals_by_customer, orders)
-    assert sum(result.values()) == sum(o["quantity"] * o["unit_price_cents"] for o in orders)
+    expected = {}
+    for order in orders:
+        customer = order["customer"]
+        expected[customer] = expected.get(customer, 0) + order["quantity"] * order["unit_price_cents"]
+
+    assert result == expected
 
 
 def test_product_ranking(benchmark, orders):
     result = benchmark(top_products, orders)
-    assert 0 < len(result) <= 3
+    product_counts = Counter()
+    for order in orders:
+        product_counts[order["product"]] += order["quantity"]
+    expected = sorted(product_counts.items(), key=lambda item: (-item[1], item[0]))[:3]
+
+    assert result == expected
 
 
 @pytest.mark.parametrize("size", [200, 2000], ids=["small", "large"])

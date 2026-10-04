@@ -1,0 +1,9 @@
+[project]
+name = "codspeed-playground"
+version = "0.1.0"
+description = "Synthetic order-processing examples for learning CodSpeed"
+requires-python = ">=3.11"
+
+[tool.pytest.ini_options]
+testpaths = ["tests", "benchmarks"]
+pythonpath = ["."]

@@ -42,7 +42,9 @@ def test_top_products_tie_order():
 
 
 def test_normalization_and_stable_deduplication():
-    assert normalize_labels(["  Coffee  SHOP ", "coffee shop", "TEA\tTIME", "", "  ", "Tea Time"]) == ["coffee shop", "tea time"]
+    labels = ["  Coffee  SHOP ", "coffee shop", "TEA\tTIME", "", "  ", "Tea Time"]
+
+    assert normalize_labels(labels) == ["coffee shop", "tea time"]
 
 
 def test_unicode_casefold():
@@ -50,7 +52,11 @@ def test_unicode_casefold():
 
 
 def test_synthetic_data_is_repeatable():
-    assert sample_orders(20) == sample_orders(20)
+    first_run = sample_orders(20)
+    second_run = sample_orders(20)
+
+    assert len(first_run) == 20
+    assert first_run == second_run
     assert sample_orders(0) == []
 
 

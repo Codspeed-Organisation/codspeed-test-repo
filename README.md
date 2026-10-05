@@ -1,5 +1,7 @@
 # CodSpeed Playground
 
+[![CodSpeed](https://img.shields.io/endpoint?url=https://codspeed.io/badge.json)](https://app.codspeed.io/Codspeed-Organisation/codspeed-test-repo?utm_source=badge)
+
 A small Python repository for trying CodSpeed with **synthetic data only**.
 It contains order-processing code, 10 correctness tests, six benchmark cases,
 and a GitHub Actions workflow. No database, real payments or external dataset

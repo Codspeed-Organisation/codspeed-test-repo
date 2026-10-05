@@ -1,0 +1,37 @@
+name: CodSpeed Benchmarks
+
+on:
+  push:
+    branches:
+      - "main"
+  pull_request:
+  # `workflow_dispatch` allows CodSpeed to trigger backtest
+  # performance analysis in order to generate initial data.
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write # for OpenID Connect authentication with CodSpeed
+
+jobs:
+  codspeed:
+    name: Run benchmarks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: python -m pip install -r requirements-dev.txt
+
+      - name: Run correctness tests
+        run: python -m pytest tests -q
+
+      - name: Run benchmarks
+        uses: CodSpeedHQ/action@v5
+        with:
+          mode: simulation
+          run: python -m pytest benchmarks --codspeed

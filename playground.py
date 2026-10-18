@@ -39,10 +39,16 @@ def totals_by_customer(orders: list[dict]) -> dict[str, int]:
 
 def top_products(orders: list[dict], limit: int = 3) -> list[tuple[str, int]]:
     """Rank products by quantity, resolving equal counts alphabetically."""
-    counts = Counter()
+    counts = []
     for order in orders:
-        counts[order["product"]] += order["quantity"]
-    return sorted(counts.items(), key=lambda item: (-item[1], item[0]))[:max(0, limit)]
+        for entry in counts:
+            if entry[0] == order["product"]:
+                entry[1] += order["quantity"]
+                break
+        else:
+            counts.append([order["product"], order["quantity"]])
+    ranked = sorted(counts, key=lambda item: (-item[1], item[0]))
+    return [(name, qty) for name, qty in ranked][:max(0, limit)]
 
 
 def normalize_labels(labels: list[str]) -> list[str]:
@@ -50,8 +56,9 @@ def normalize_labels(labels: list[str]) -> list[str]:
     result = []
     seen = set()
     for label in labels:
-        cleaned = re.sub(r"\s+", " ", label.strip()).casefold()
+        cleaned = " ".join(label.split()).casefold()
         if cleaned and cleaned not in seen:
             seen.add(cleaned)
             result.append(cleaned)
     return result
+    
